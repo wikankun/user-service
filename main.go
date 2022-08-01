@@ -1,14 +1,18 @@
 package main
 
 import (
+	"log"
 	"net/http"
 	"os"
-	"log"
-	
+
+	"github.com/go-playground/validator"
+	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/joho/godotenv"
 	"github.com/wikankun/user-service/database"
+	"github.com/wikankun/user-service/migration"
+	"github.com/wikankun/user-service/router"
+	"github.com/wikankun/user-service/util"
 )
 
 func main() {
@@ -23,33 +27,25 @@ func main() {
 			Port:     os.Getenv("DB_PORT"),
 		}
 
-	initDB(config)
+	database.InitDB(config)
+	util.InitUtil()
 
 	if len(os.Args) > 1 {
 		switch os.Args[1] {
 		case "migrate":
-			database.Migrate()
+			migration.MigrateDB()
 		}
 	}
 
 	startServer()
 }
 
-func initDB(config database.Config) {
-	connectionString := database.GetConnectionString(config)
-	err := database.Connect(connectionString)
-	if err != nil {
-		panic(err.Error())
-	}
+type CustomValidator struct {
+	validator *validator.Validate
 }
 
-func initHandlers(e *echo.Echo) {
-	e.GET("/", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Hello, World!")
-	})
-	e.POST("/register")
-	e.POST("/verify")
-	e.POST("/login")
+func (cv *CustomValidator) Validate(i interface{}) error {
+	return cv.validator.Struct(i)
 }
 
 func startServer() {
@@ -57,12 +53,18 @@ func startServer() {
 	log.Printf("Starting HTTP Server on port %s", port)
 
 	e := echo.New()
-	initHandlers(e)
+
+	router.InitHandlers(e)
 
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"*"},
-		AllowMethods: []string{http.MethodGet, http.MethodHead, http.MethodPut, http.MethodPost},
+		AllowMethods: []string{http.MethodGet, http.MethodPut, http.MethodPost},
 	}))
+	e.Use(middleware.Logger())
 
-	e.Logger.Fatal(e.Start(":"+port))
+	e.Validator = &CustomValidator{
+		validator: validator.New(),
+	}
+
+	e.Logger.Fatal(e.Start(":" + port))
 }
