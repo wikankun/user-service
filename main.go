@@ -9,6 +9,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/wikankun/user-service/config"
 	"github.com/wikankun/user-service/database"
 	"github.com/wikankun/user-service/migration"
 	"github.com/wikankun/user-service/router"
@@ -18,16 +19,8 @@ import (
 func main() {
 	godotenv.Load()
 
-	config :=
-		database.Config{
-			Host:     os.Getenv("DB_HOST"),
-			User:     os.Getenv("DB_USERNAME"),
-			Password: os.Getenv("DB_PASSWORD"),
-			Database: os.Getenv("DB_DATABASE"),
-			Port:     os.Getenv("DB_PORT"),
-		}
-
-	database.InitDB(config)
+	config.InitConfig()
+	database.InitDB()
 	util.InitUtil()
 
 	if len(os.Args) > 1 {

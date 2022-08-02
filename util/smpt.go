@@ -2,10 +2,10 @@ package util
 
 import (
 	"log"
-	"os"
 	"strconv"
 
 	"github.com/go-gomail/gomail"
+	"github.com/wikankun/user-service/config"
 )
 
 var (
@@ -14,10 +14,10 @@ var (
 )
 
 func InitUtilSMTP() {
-	emailAddress = os.Getenv("SMTP_EMAIL")
-	emailPassword := os.Getenv("SMTP_PASSWORD")
-	smtpAddress := os.Getenv("SMTP_HOST")
-	smtpPortStr := os.Getenv("SMTP_PORT")
+	emailAddress = config.Config.SMTP.Email
+	emailPassword := config.Config.SMTP.Password
+	smtpAddress := config.Config.SMTP.Host
+	smtpPortStr := config.Config.SMTP.Port
 
 	smtpPort, err := strconv.Atoi(smtpPortStr)
 	if err != nil {

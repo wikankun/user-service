@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"strconv"
 
 	"github.com/labstack/echo/v4"
+	"github.com/wikankun/user-service/config"
 	"github.com/wikankun/user-service/model"
 	"github.com/wikankun/user-service/util"
 )
@@ -114,7 +114,7 @@ func UserRegister(c echo.Context) error {
 		return util.ErrorResponse(c, http.StatusInternalServerError, err.Error())
 	}
 
-	verificationLength, _ := strconv.Atoi(os.Getenv("VERIFICATION_LENGTH"))
+	verificationLength, _ := strconv.Atoi(config.Config.App.VerificationLength)
 	verificationCode := util.RandomString(verificationLength)
 
 	err = util.SendEmail(
@@ -205,7 +205,7 @@ func UserUpdate(c echo.Context) error {
 	}
 
 	if param.Email != "" {
-		verificationLength, _ := strconv.Atoi(os.Getenv("VERIFICATION_LENGTH"))
+		verificationLength, _ := strconv.Atoi(config.Config.App.VerificationLength)
 		verificationCode := util.RandomString(verificationLength)
 		err = util.SendEmail(
 			param.Email,

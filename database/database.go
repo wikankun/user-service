@@ -4,25 +4,18 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/wikankun/user-service/config"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-type Config struct {
-	Host     string
-	User     string
-	Password string
-	Database string
-	Port     string
-}
-
-var GetConnectionString = func(config Config) string {
+var GetConnectionString = func() string {
 	connectionString := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Asia/Shanghai",
-		config.Host,
-		config.User,
-		config.Password,
-		config.Database,
-		config.Port,
+		config.Config.Database.Host,
+		config.Config.Database.User,
+		config.Config.Database.Password,
+		config.Config.Database.Database,
+		config.Config.Database.Port,
 	)
 
 	return connectionString

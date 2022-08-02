@@ -1,11 +1,11 @@
 package util
 
 import (
-	"os"
 	"strconv"
 	"time"
 
 	"github.com/golang-jwt/jwt"
+	"github.com/wikankun/user-service/config"
 )
 
 type jwtClaims struct {
@@ -14,7 +14,7 @@ type jwtClaims struct {
 }
 
 func NewJWTToken(id int) (string, time.Time, error) {
-	tokenExpire, _ := strconv.Atoi(os.Getenv("TOKEN_EXPIRE"))
+	tokenExpire, _ := strconv.Atoi(config.Config.App.TokenExpire)
 	expireTime := time.Now().Add(time.Duration(tokenExpire) * time.Minute)
 	claims := jwtClaims{
 		StandardClaims: jwt.StandardClaims{
@@ -26,7 +26,7 @@ func NewJWTToken(id int) (string, time.Time, error) {
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	jwt_secret := os.Getenv("JWT_SECRET")
+	jwt_secret := config.Config.App.JWTSecret
 	tokenSigned, err := token.SignedString([]byte(jwt_secret))
 	if err != nil {
 		return "", time.Now(), err
