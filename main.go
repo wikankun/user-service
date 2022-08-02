@@ -42,7 +42,7 @@ func (cv *CustomValidator) Validate(i interface{}) error {
 }
 
 func startServer() {
-	port := os.Getenv("PORT")
+	port := config.Config.App.Port
 	log.Printf("Starting HTTP Server on port %s", port)
 
 	e := echo.New()

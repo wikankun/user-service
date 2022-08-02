@@ -5,8 +5,8 @@ import (
 )
 
 type Configs struct {
-	Database DatabaseConfig
 	App      AppConfig
+	Database DatabaseConfig
 	SMTP     SMTPConfig
 }
 
@@ -19,9 +19,10 @@ type DatabaseConfig struct {
 }
 
 type AppConfig struct {
-	VerificationLength string
+	Port               string
 	JWTSecret          string
 	TokenExpire        string
+	VerificationLength string
 }
 
 type SMTPConfig struct {
@@ -43,9 +44,10 @@ func InitConfig() {
 	}
 
 	Config.App = AppConfig{
-		VerificationLength: os.Getenv("VERIFICATION_LENGTH"),
+		Port:               os.Getenv("PORT"),
 		JWTSecret:          os.Getenv("JWT_SECRET"),
 		TokenExpire:        os.Getenv("TOKEN_EXPIRE"),
+		VerificationLength: os.Getenv("VERIFICATION_LENGTH"),
 	}
 
 	Config.SMTP = SMTPConfig{
